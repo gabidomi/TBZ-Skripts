@@ -1,0 +1,131 @@
+﻿#START OF SKRIPT
+
+# Überprüfung der Internetverbindung
+if (-not (Test-Connection -ComputerName google.com -Count 2 -Quiet)) {
+    Write-Error "Keine Internetverbindung. Bitte überprüfen Sie Ihre Verbindung."
+    exit
+}
+
+# Überprüfung des verfügbaren Speicherplatzes
+$requiredSpace = 5000MB # Beispielwert für benötigten Speicherplatz
+$freeSpace = (Get-PSDrive C).Free
+if ($freeSpace -lt $requiredSpace) {
+    Write-Error "Nicht genügend Speicherplatz. Benötigt: $requiredSpace, Verfügbar: $freeSpace"
+    exit
+}
+
+
+# Aktualisieren des NuGet-Providers
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+
+# Installation des BurntToast-Moduls für alle Benutzer ohne Bestätigung
+Install-Module -Name BurntToast -Force -Scope AllUsers -Confirm:$false
+
+#Ordner erstellen für Notification-Dienst
+New-Item -Path 'C:\Bild Notification Application' -ItemType Directory
+
+# Bild-URL und Speicherort definieren
+$bildUrl = "https://static.vecteezy.com/ti/gratis-vektor/p1/21351488-benachrichtigung-symbol-zum-ihre-webseite-design-logo-anwendung-ui-kostenlos-vektor.jpg" # URL des Bildes
+$bildPfad = "C:\Bild Notification Application\Notification.jpg" # Gewünschter Speicherpfad inklusive Dateiname und -erweiterung
+
+# Herunterladen des Bildes
+Invoke-WebRequest -Uri $bildUrl -OutFile $bildPfad
+
+New-BurntToastNotification -Text "Start Installation" -AppLogo $bildPfad
+
+# Benutzer TESTUSER erstellen mit Passwort Test123
+$testUser = New-LocalUser -Name "TESTUSER" -Password (ConvertTo-SecureString "Test123" -AsPlainText -Force)
+
+# Benutzer zur Gruppe "Benutzer" hinzufügen
+Add-LocalGroupMember -Group "Benutzer" -Member $testUser.Name
+ 
+ 
+
+# Ordner IT_Ordner im Laufwerk C: erstellen und Zugriff für TESTUSER gewähren
+$folderPath = "C:\IT_Ordner"
+New-Item -Path $folderPath -ItemType Directory
+$acl = Get-Acl $folderPath
+$permission = "TESTUSER", "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow"
+$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
+$acl.SetAccessRule($accessRule)
+Set-Acl $folderPath $acl
+
+
+# Importieren des BurntToast-Moduls -> Zur Überprüfung / Validierung der Installation
+Import-Module BurntToast
+
+# Notepad++ herunterladen und im Silent-Modus installieren
+$notepadPlusPlusInstallerUrl = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6/npp.8.6.Installer.x64.exe"
+$notepadPlusPlusInstallerPath = "$env:TEMP\npp.8.6.Installer.x64.exe"
+Invoke-WebRequest -Uri $notepadPlusPlusInstallerUrl -OutFile $notepadPlusPlusInstallerPath
+Start-Process -Wait -FilePath $notepadPlusPlusInstallerPath -ArgumentList "/S"
+
+# Erstellen und Anzeigen einer Toast-Benachrichtigung
+New-BurntToastNotification -Text "Benachrichtigung: Notepad++ wurde installiert" -AppLogo $bildPfad
+
+# Google Chrome herunterladen und im Silent-Modus installieren
+$chromeInstallerUrl = "https://dl.google.com/chrome/install/latest/chrome_installer.exe"
+$chromeInstallerPath = "$env:TEMP\chrome_installer.exe"
+Invoke-WebRequest -Uri $chromeInstallerUrl -OutFile $chromeInstallerPath
+Start-Process -Wait -FilePath $chromeInstallerPath -ArgumentList "/silent /install"
+
+# Erstellen und Anzeigen einer Toast-Benachrichtigung
+New-BurntToastNotification -Text "Benachrichtigung: Google Chrome wurde installiert" -AppLogo $bildPfad
+
+# Firefox herunterladen und im Silent-Modus installieren
+$firefoxInstallerUrl = "https://download.mozilla.org/?product=firefox-latest&os=win&lang=en-US"
+$firefoxInstallerPath = "$env:TEMP\firefox_installer.exe"
+Invoke-WebRequest -Uri $firefoxInstallerUrl -OutFile $firefoxInstallerPath
+Start-Process -Wait -FilePath $firefoxInstallerPath -ArgumentList "/S"
+
+# Erstellen und Anzeigen einer Toast-Benachrichtigung
+New-BurntToastNotification -Text "Benachrichtigung: Firefox wurde installiert" -AppLogo $bildPfad
+
+# Thunderbird herunterladen und im Silent-Modus installieren
+$thunderbirdInstallerUrl = "https://download.mozilla.org/?product=thunderbird-latest&os=win&lang=en-US"
+$thunderbirdInstallerPath = "$env:TEMP\thunderbird_installer.exe"
+Invoke-WebRequest -Uri $thunderbirdInstallerUrl -OutFile $thunderbirdInstallerPath
+Start-Process -Wait -FilePath $thunderbirdInstallerPath -ArgumentList "/S"
+
+# Erstellen und Anzeigen einer Toast-Benachrichtigung
+New-BurntToastNotification -Text "Benachrichtigung: Thunderbird wurde installiert" -AppLogo $bildPfad
+
+# Discord herunterladen und im Silent-Modus installieren
+$discordInstallerUrl = "https://discord.com/api/download?platform=win"
+$discordInstallerPath = "$env:TEMP\discord_installer.exe"
+Invoke-WebRequest -Uri $discordInstallerUrl -OutFile $discordInstallerPath
+Start-Process -Wait -FilePath $discordInstallerPath -ArgumentList "--silent"
+
+# Erstellen und Anzeigen einer Toast-Benachrichtigung
+New-BurntToastNotification -Text "Benachrichtigung: Discord wurde installiert" -AppLogo $bildPfad
+
+# Microsoft Teams im Silent-Modus herunterladen und installieren
+$teamsInstallerUrl = "https://statics.teams.cdn.office.net/production-windows-x64/enterprise/webview2/lkg/MSTeams-x64.msix"
+$teamsInstallerPath = "$env:TEMP\MS-Teams-x64.msix"
+Invoke-WebRequest -Uri $teamsInstallerUrl -OutFile $teamsInstallerPath
+Add-AppxPackage -Path $teamsInstallerPath
+
+# Erstellen und Anzeigen einer Toast-Benachrichtigung
+New-BurntToastNotification -Text "Benachrichtigung: Microsoft Teams wurde installiert" -AppLogo $bildPfad
+
+# VMware Workstation Pro Installer-Pfad definieren
+$VmwareInstallerURL = "https://download3.vmware.com/software/WKST-1750-WIN/VMware-workstation-full-17.5.0-22583795.exe"
+$VmwareInstallerPath = "$env:TEMP\\VMware-workstation-full-17.5.0-22583795.exe"
+# Herunterladen des Installers
+Invoke-WebRequest -Uri $VmwareInstallerURL -OutFile $VmwareInstallerPath
+# Starten des Installationsprozesses
+Start-Process -Wait -FilePath $VmwareInstallerPath -ArgumentList '/s', '/v', '/qn EULAS_AGREED=1 SERIALNUMBER=NZ4RR-FTK5H-H81C1-Q30QH-1V2LA'
+
+
+# Silent-Installationsargumente definieren
+$arguments = "--required --console --eulas-agreed"
+
+# Installationsbefehl ausführen
+Start-Process -FilePath $installerPath -ArgumentList $arguments -Wait -NoNewWindow
+
+# Erstellen und Anzeigen einer Toast-Benachrichtigung
+New-BurntToastNotification -Text "Benachrichtigung: Vmware Workstation pro v.17 wurde installiert" -AppLogo $bildPfad
+
+
+# Benachrichtigung anzeigen
+[System.Windows.Forms.MessageBox]::Show("Die Systemkonfiguration wurde abgeschlossen.", "Setup abgeschlossen", "OK", [System.Windows.Forms.MessageBoxIcon]::Information) 
