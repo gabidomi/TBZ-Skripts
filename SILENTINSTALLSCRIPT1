@@ -1,0 +1,141 @@
+#START OF SKRIPT
+
+# Überprüfung der Internetverbindung
+if (-not (Test-Connection -ComputerName google.com -Count 2 -Quiet)) {
+    Write-Error "Keine Internetverbindung. Bitte überprüfen Sie Ihre Verbindung."
+    exit
+}
+
+# Überprüfung des verfügbaren Speicherplatzes
+$requiredSpace = 5000MB # Beispielwert für benötigten Speicherplatz
+$freeSpace = (Get-PSDrive C).Free
+if ($freeSpace -lt $requiredSpace) {
+    Write-Error "Nicht genügend Speicherplatz. Benötigt: $requiredSpace, Verfügbar: $freeSpace"
+    exit
+}
+
+# Überprüfen, ob das Modul "PSWindowsUpdate" geladen ist. Falls nicht, versuchen Sie, es zu installieren.
+if (-not (Get-Module -Name PSWindowsUpdate -ListAvailable)) {
+    Write-Host "Das Modul PSWindowsUpdate ist nicht installiert. Versuche, es zu installieren..."
+    Install-Module -Name PSWindowsUpdate -Force -Scope CurrentUser
+}
+
+# Überprüfen, ob das Modul "ImportExcel" geladen ist. Falls nicht, versuchen Sie, es zu installieren.
+if (-not (Get-Module -Name ImportExcel -ListAvailable)) {
+    Write-Host "Das Modul ImportExcel ist nicht installiert. Versuche, es zu installieren..."
+    Install-Module -Name ImportExcel -Force -Scope CurrentUser
+}
+
+# Importieren Sie das Modul "PSWindowsUpdate" und das Modul "ImportExcel".
+Import-Module PSWindowsUpdate
+Import-Module ImportExcel
+
+# Wallpaper-Klasse definieren
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+
+public class Wallpaper {
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
+}
+"@
+
+# Pfad für das Hintergrundbild und Exportdateien festlegen
+$FolderPath = "C:\Bild Notification Application"
+$ExportPath = "C:\ExportedInventories"  # Anpassbarer Pfad für Exportdateien
+$ImagePath = "$FolderPath\background.jpg"
+$ImageUrl = "https://images.pexels.com/photos/640781/pexels-photo-640781.jpeg?cs=srgb&dl=pexels-eberhard-grossgasteiger-640781.jpg"
+
+# URL für OpenOffice-Installer
+$openOfficeInstallerUrl = "https://deac-ams.dl.sourceforge.net/project/openofficeorg.mirror/4.1.15/binaries/de/Apache_OpenOffice_4.1.15_Win_x86_install_de.exe"
+$openOfficeInstallerPath = "$FolderPath\OpenOfficeInstaller.exe"
+
+# Überprüfen, ob der Ordner existiert. Wenn nicht, erstellen.
+if (-not (Test-Path -Path $FolderPath)) {
+    New-Item -Path $FolderPath -ItemType Directory
+}
+
+# Überprüfen, ob der Exportordner existiert. Wenn nicht, erstellen.
+if (-not (Test-Path -Path $ExportPath)) {
+    New-Item -Path $ExportPath -ItemType Directory
+}
+
+# Bild aus dem Internet herunterladen
+try {
+    Invoke-WebRequest -Uri $ImageUrl -OutFile $ImagePath
+} catch {
+    Write-Error "Fehler beim Herunterladen des Hintergrundbildes: $_"
+}
+
+# Hintergrundbild ändern
+try {
+    [Wallpaper]::SystemParametersInfo(20, 0, $ImagePath, 3)
+} catch {
+    Write-Error "Fehler beim Setzen des Hintergrundbildes: $_"
+}
+
+# OpenOffice im Hintergrund installieren
+try {
+    Invoke-WebRequest -Uri $openOfficeInstallerUrl -OutFile $openOfficeInstallerPath
+    Start-Process -FilePath $openOfficeInstallerPath -ArgumentList "/S" -Wait
+} catch {
+    Write-Error "Fehler bei der Installation von OpenOffice: $_"
+
+# Überprüfen, ob das Modul "ImportExcel" geladen ist. Falls nicht, versuchen Sie, es zu installieren.
+if (-not (Get-Module -Name ImportExcel -ListAvailable)) {
+    Write-Host "Das Modul ImportExcel ist nicht installiert. Versuche, es zu installieren..."
+    Install-Module -Name ImportExcel -Force -Scope CurrentUser
+}
+
+# Importieren Sie das Modul "ImportExcel".
+Import-Module ImportExcel
+
+# Pfad für Exportdateien festlegen
+$ExportPath = "C:\ExportedInventories"
+
+# Überprüfen, ob der Exportordner existiert. Wenn nicht, erstellen.
+if (-not (Test-Path -Path $ExportPath)) {
+    New-Item -Path $ExportPath -ItemType Directory
+}
+
+# Hardware-Informationen sammeln
+try {
+    $hardwareInfo = Get-CimInstance -ClassName Win32_ComputerSystem
+} catch {
+    Write-Error "Fehler beim Sammeln von Hardware-Informationen: $_"
+}
+
+# Software-Informationen sammeln
+try {
+    $installedSoftware = Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | 
+                         Select-Object DisplayName, DisplayVersion, Publisher
+} catch {
+    Write-Error "Fehler beim Sammeln von Software-Informationen: $_"
+}
+
+# Ergebnisse in eine Excel-Datei schreiben
+try {
+    $hardwareInfo | Export-Excel -Path "$ExportPath\gesammeltes_inventar.xlsx" -WorksheetName "Hardware-Informationen"
+    $installedSoftware | Export-Excel -Path "$ExportPath\gesammeltes_inventar.xlsx" -WorksheetName "Software-Informationen" -Append
+} catch {
+    Write-Error "Fehler beim Exportieren der Daten nach Excel: $_"
+}
+
+# Pfad zur OpenOffice Calc-Anwendung definieren
+$openOfficePath = "C:\Program Files (x86)\OpenOffice 4\program\scalc.exe"
+
+# Pfad der exportierten Excel-Datei
+$exportedExcelFile = "$ExportPath\gesammeltes_inventar.xlsx"
+
+# Überprüfen, ob OpenOffice installiert ist und der Pfad korrekt ist
+if (Test-Path -Path $openOfficePath) {
+    try {
+        # Versuchen, die exportierte Excel-Datei mit OpenOffice zu öffnen
+        Start-Process -FilePath $openOfficePath -ArgumentList $exportedExcelFile
+    } catch {
+        Write-Error "Fehler beim Öffnen der Excel-Datei mit OpenOffice: $_"
+    }
+} else {
+    Write-Host "OpenOffice ist nicht installiert oder der Pfad ist nicht korrekt."
+} 
