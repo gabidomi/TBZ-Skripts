@@ -1,16 +1,46 @@
-PowerShell-Skripte zur Systemoptimierung
 
-Beschreibung
-Dieses Repository enthält zwei PowerShell-Skripte zur Automatisierung von Systemkonfigurations- und Installationsprozessen auf Windows-Systemen.
+README für PowerShell-Skripte
+Überblick
+Diese Dokumentation beschreibt zwei PowerShell-Skripte, die für unterschiedliche Aufgaben in einer Windows-Umgebung entwickelt wurden.
 
-Skripte
-Systemkonfiguration und Softwareinstallation: Automatisiert die Installation von Software und Konfiguration von Systemeinstellungen.
-Systemchecks und Modulverwaltung: Führt grundlegende Systemüberprüfungen durch und verwaltet PowerShell-Module.
+Skript 1: Benutzer- und Anwendungskonfiguration
+Skript 1 konzentriert sich auf die Erstellung eines Benutzers, das Einrichten eines Benachrichtigungsdienstes und die Installation mehrerer gängiger Anwendungen.
+
+Skript 2: Systemvorbereitung und Inventarisierung
+Skript 2 führt eine Reihe von Aufgaben aus, um ein Windows-System für den Einsatz vorzubereiten und eine Inventarisierung der Hardware und Software durchzuführen.
+
+Skript 1: Funktionen
+Internetverbindung und Speicherplatz überprüfen: Ähnlich wie in Skript 2.
+Installation von BurntToast: Installiert das Modul BurntToast für Benachrichtigungen.
+Benutzererstellung: Erstellt einen neuen lokalen Benutzer namens "TESTUSER".
+Ordnererstellung und Zugriffsberechtigung: Erstellt einen Ordner und gewährt dem neuen Benutzer Zugriff darauf.
+Installation verschiedener Anwendungen: Installiert Notepad++, Google Chrome, Firefox, Thunderbird, Discord, Microsoft Teams und VMware Workstation Pro, jeweils mit einer Benachrichtigung nach der Installation.
+Abschlussbenachrichtigung: Zeigt eine Abschlussbenachrichtigung an, wenn alle Installationen abgeschlossen sind.
+
+Skript 2: Funktionen
+Internetverbindung überprüfen: Stellt sicher, dass das System mit dem Internet verbunden ist.
+Speicherplatz überprüfen: Prüft, ob genügend Speicherplatz auf dem Laufwerk C: vorhanden ist.
+Modul-Installation: Installiert die PowerShell-Module "PSWindowsUpdate" und "ImportExcel", falls sie noch nicht vorhanden sind.
+Hintergrundbild setzen: Lädt ein Bild aus dem Internet herunter und setzt es als Desktop-Hintergrund.
+OpenOffice Installation: Lädt den OpenOffice-Installer herunter und installiert OpenOffice im Hintergrund.
+Hardware- und Software-Inventarisierung: Sammelt Informationen über die Hardware und installierte Software des Systems und speichert diese in einer Excel-Datei.
+OpenOffice für Exportdateien verwenden: Versucht, die exportierte Excel-Datei mit OpenOffice zu öffnen.
 
 Voraussetzungen
 Windows-Betriebssystem
 PowerShell 5.1 oder höher
-Administratorrechte
+Internetverbindung
+Genügend Speicherplatz auf dem Laufwerk C:
 
 Verwendung
-Laden Sie die Skripte herunter und führen Sie sie in PowerShell mit Administratorrechten aus.
+Öffnen Sie PowerShell als Administrator.
+Navigieren Sie zum Verzeichnis, in dem das Skript gespeichert ist.
+Führen Sie das Skript aus (entweder aus dem Code oder vom .ZIP mit dem benötigen Dateiformat
+
+Wichtige Hinweise
+Beide Skripte müssen mit Administratorrechten ausgeführt werden.
+Überprüfen Sie die URL-Links in den Skripten auf Aktualität.
+Stellen Sie sicher, dass die erforderlichen Module und Anwendungen für Ihre Systemkonfiguration geeignet sind.
+
+Lizenz
+Diese Skripte werden "wie sie sind" bereitgestellt, ohne Gewährleistung jeglicher Art. Nutzung auf eigenes Risiko.
